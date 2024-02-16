@@ -1,0 +1,131 @@
+/* index.css */
+
+body {
+    background-color: #398969; 
+    margin: 0; 
+    padding: 0; 
+    font-family: Arial, sans-serif; 
+  }
+  
+  .header-container {
+    background-color: #8ae0ad;
+    color: white; 
+    padding: 5px; 
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center; 
+  }
+  
+  .logo {
+    margin-left: 10px; 
+  }
+  
+  .title {
+    font-weight: bold; 
+    font-size: 72px;
+    margin-right: 254px; 
+    display: flex; 
+    justify-content: center; 
+    white-space: nowrap;
+  }
+  
+  .links-container {
+    margin-top: 75px; 
+    display: flex;
+    justify-content: center;
+  }
+  
+  
+  .navigation-bar {
+    background-color: #90EE90; 
+    padding: 10px; 
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0; 
+    display: flex; 
+  }
+  
+  .nav-link {
+    display: inline-block;
+    padding: 10px 160px; 
+    color: #008080; 
+    font-weight: bold; 
+    text-decoration: none;
+    margin-right: 10px; 
+  }
+  
+  .nav-link:hover {
+    background-color: #66CDAA; 
+    color: white; 
+    border-radius: 5px; 
+  }
+  
+  .nav-link:last-child {
+    margin-right: 0; 
+  }
+  
+  .orders-page {
+    background-color: #398969; 
+    color: white; 
+    padding: 20px;
+  }
+  
+  .orders-page table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .orders-page th, .orders-page td {
+    padding: 10px;
+    border-bottom: 1px solid #fff;
+  }
+  
+  .orders-page th {
+    background-color: #8ae0ad;
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  .orders-page tbody tr:nth-child(even) {
+    background-color: #5d9b7f;
+  }
+  
+  .orders-page tbody tr:nth-child(odd) {
+    background-color: #398969;
+  }
+  
+  .nav-link {
+    display: inline-block;
+    padding: 10px 160px; 
+    color: #008080; 
+    font-weight: bold; 
+    text-decoration: none;
+    margin-right: 10px; 
+  }
+  
+  .nav-link:not(.active-link) {
+    text-decoration: underline; 
+  }
+  
+  .nav-link:hover {
+    background-color: #66CDAA; 
+    color: white; 
+    border-radius: 5px;
+  }
+  
+  .nav-link:last-child {
+    margin-right: 0; 
+  }
+  
+  .active-link {
+    font-weight: bold; 
+  }
