@@ -7,7 +7,7 @@ const Header = () => {
         <div className="header-container">
             <div className="logo-container">
                 <img src={logoGif} alt="Logo" className="logo" />
-                <h1 className="title">The Boulevard Bookstore</h1>
+                <h1 className="title">Bookify Books</h1>
             </div>
             <div className="links-container">
                 <nav className="navigation-bar">
