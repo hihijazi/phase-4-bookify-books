@@ -1,0 +1,28 @@
+{
+    "name": "bookify-books",
+    "version": "1.0.0",
+    "description": "Bookstore",
+    "main": "index.js",
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
+    },
+    "proxy": "http://127.0.0.1:5000",
+    "dependencies": {
+        "bootstrap": "^5.3.2",
+        "faker": "^6.6.6",
+        "path-browserify": "^1.0.1",
+        "react": "^17.0.2",
+        "react-bootstrap": "^2.10.1",
+        "react-router-dom": "^6.22.0",
+        "sqlite3": "^5.1.7"
+    },
+    "devDependencies": {
+        "eslint-plugin-jsx-a11y": "^6.8.0",
+        "eslint-plugin-react": "^7.33.2",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "html-webpack-plugin": "^5.6.0"
+    }
+}
