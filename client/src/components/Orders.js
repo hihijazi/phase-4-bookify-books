@@ -7,7 +7,7 @@ const Orders = () => {
 
     useEffect(() => {
         // Fetch orders
-        fetch('http://127.0.0.1:5000/orders')
+        fetch('http://127.0.0.1:5555/orders')
             .then(response => {
                 if (response.ok) {
                     return response.json();

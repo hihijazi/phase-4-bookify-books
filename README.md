@@ -46,7 +46,7 @@ pipenv shell
 npm install --prefix client
 ```
 
-You can run your Flask API on [`127.0.0.1:5000`](http://127.0.0.1:5000/) by
+You can run your Flask API on [`127.0.0.1:5555`](http://127.0.0.1:5555/) by
 running:
 
 ```console
