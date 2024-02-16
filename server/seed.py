@@ -24,11 +24,22 @@ with app.app_context():
 
     # Generate fake data for books
     print("Generating fake books...")
-    books = [Book(title=faker.sentence(), author=faker.name(), price=faker.random_number()) for _ in range(10)]  # Generate 10 fake books
+    books = [
+    Book(
+        title=faker.sentence(),
+        author=faker.name(),
+        price=faker.random_int(min=1, max=15)  # Generate a random integer between 1 and 15
+    ) for _ in range(10)
+            ]  # Generate 10 fake books
 
-    # Generate fake data for orders
+    # Generate fake data for orders with total price capped at $150
     print("Generating fake orders...")
-    orders = [Order(total_price=faker.random_number(), customer_id=faker.random_element(elements=range(1, 11))) for _ in range(10)]  # Generate 10 fake orders with random customer IDs
+    orders = [
+    Order(total_price=faker.random_int(min=100, max=15000) / 100,  # Divide by 100 to get dollars and cents
+          customer_id=faker.random_element(elements=range(1, 11)))
+    for _ in range(10)
+            ]
+
 
     # Add generated objects to the session
     db.session.add_all(customers)

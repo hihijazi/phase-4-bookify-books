@@ -62,13 +62,12 @@ class Book(db.Model, SerializerMixin):
         return name
 
 
-
     @validates('price')
     def validate_price(self, key, price):
-        if price >= 0:
+        if 1 <= price <= 15:  # Check if price is between 1 and 15
             return price
         else:
-            raise ValueError('Price must be a valid integer')
+            raise ValueError('Price must be between 1 and 15')
         
     def __repr__(self):
         return f'<Class {self.id}:  {self.name}: {self.price}'
