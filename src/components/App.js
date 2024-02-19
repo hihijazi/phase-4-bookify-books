@@ -1,4 +1,6 @@
-import { Route, Switch } from "react-router-dom";
+import React from 'react';
+import '../index.css';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./Home";
 import Navbar from "./Navbar";
 import Header from "./Header";
@@ -6,7 +8,7 @@ import Footer from "./Footer";
 import Orders from "./Orders";
 import Books from "./Books";
 import AddBook from "./AddBook";
-import BookDetails from "./BookDetails.js";
+import BookDetails from "./BookDetails";
 
 function App() {
   return (
