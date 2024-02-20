@@ -27,12 +27,13 @@ const Orders = () => {
     }, []);
 
     return (
-        <div>
-            <h2>Orders</h2>
+        <div style={{ marginTop: '-600px', padding: '75px', textAlign: 'center' }}>
+            <h2 > </h2> 
             <OrderList orders={orders} customers={customers} />
         </div>
     );
 };
 
 export default Orders;
+
 

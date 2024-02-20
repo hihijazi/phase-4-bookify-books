@@ -22,8 +22,8 @@ const Books = () => {
   };
 
   return (
-    <div>
-      <h2>Explore Our Books</h2>
+    <div style={{ marginTop: '-630px', padding: '75px', textAlign: 'center' }}>
+      <h2 style={{ fontSize: '36px' }}>Explore Our Books</h2>
       <BookList books={books} />
     </div>
   );

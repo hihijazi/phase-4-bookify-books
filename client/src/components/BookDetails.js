@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 const BookDetails = () => {
   const { id } = useParams();
-  const [book, setBook] = useState([]);
+  const [book, setBook] = useState(null); 
 
   useEffect(() => {
     fetchBooks();
@@ -23,11 +23,14 @@ const BookDetails = () => {
   };
 
   return (
-    <div>
-      <h2>Book detail</h2>
-      <p>
-        {book.title} by {book.author}
-      </p>
+    <div style={{ marginTop: '-600px', padding: '75px', textAlign: 'center' }}>
+      <h2 style={{ fontSize: '36px' }}>Book Detail</h2> 
+      {book && ( 
+        <div>
+          <p style={{ fontSize: '18px' }}>{book.title} by {book.author}</p>
+        
+        </div>
+      )}
     </div>
   );
 };

@@ -30,13 +30,13 @@ const BookList = () => {
   const allBooks = [...books, ...suggestedBooks];
 
   return (
-    <div>
-      <h2> </h2>
-      <div>
+    <div style={{ marginTop: '-100px', padding: '50px' }}>
+      <h2 style={{ fontSize: '36px', textAlign: 'center' }}> </h2>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {books.map((book) => (
           <div
             key={book.id}
-            style={{ marginLeft: "10px", marginBottom: "10px" }}
+            style={{ marginLeft: "10px", marginBottom: "10px", fontSize: '18px' }}
           >
             <Link to={`/books/${book.id}`}>
               {book.title} by {book.author}
