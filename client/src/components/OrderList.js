@@ -20,21 +20,41 @@ const OrderList = () => {
     }
   };
 
+  const leftOrders = orders.slice(0, 5);
+  const rightOrders = orders.slice(5, 10);
+
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h2 style={{ fontSize: '36px' }}>Orders</h2> {/* Adjust font size */}
-      <div>
-        {orders.map((order) => (
-          <div key={order.id} style={{ marginBottom: '20px' }}> {/* Adjust spacing */}
-            <p style={{ fontSize: '18px' }}>Order ID: {order.id}</p> {/* Adjust font size */}
-            <p style={{ fontSize: '18px' }}>Total Price: ${order.total_price}</p> {/* Adjust font size */}
-            {/* Display other order details as needed */}
-          </div>
-        ))}
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ marginRight: "25px", padding: "10px" }}>
+        <h2 style={{ marginTop: "0px", marginLeft: "20px" }}> </h2>
+        <div>
+          {leftOrders.map((order) => (
+            <div key={order.id}>
+              <p>Order ID: {order.id}</p>
+              <p>Total Price: ${order.total_price}</p>
+              {/* Display other order details as needed */}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: "10px" }}>
+        <h2> </h2>
+        <div>
+          {rightOrders.map((order) => (
+            <div key={order.id}>
+              <p>Order ID: {order.id}</p>
+              <p>Total Price: ${order.total_price}</p>
+              {/* Display other order details as needed */}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
 export default OrderList;
+
+
+
 
