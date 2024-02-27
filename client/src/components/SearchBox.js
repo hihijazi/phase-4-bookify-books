@@ -1,22 +1,34 @@
-import React, { Component } from 'react';
+// SearchBox.js
 
+import React, { useState } from "react";
+import "../index.css";
 
-const SearchBox = (props) => {
+const SearchBox = ({ onSearch }) => {
+  const [query, setQuery] = useState("");
 
-    return (
-        <div className="search-area">
-        <form onSubmit={props.handleSubmit}>
-            <input onChange={props.handleChange} placeholder="Search books" type="text"/>
-            <button type="submit">Search</button>
-            <select value={props.sort} onChange={props.handleSort} >
-                <option value="" disabled selected>Sort</option>
-                <option value="Newest">Newest</option>
-                <option value="Oldest">Oldest</option>
-            </select>
-        </form>
-        </div>
-      
-    );
-}
+  const handleInputChange = (event) => {
+    setQuery(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onSearch(query);
+  };
+
+  return (
+    <div className="search-container"> {/* Apply container class */}
+      <form onSubmit={handleSubmit}>
+        <input
+          className="search-input"
+          type="text"
+          placeholder=""
+          value={query}
+          onChange={handleInputChange}
+        />
+        <button className="search-button" type="submit">Search</button> {/* Apply button class */}
+      </form>
+    </div>
+  );
+};
 
 export default SearchBox;

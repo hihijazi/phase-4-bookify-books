@@ -10,7 +10,8 @@ import Orders from './Orders';
 import Books from './Books';
 import AddBook from './AddBook';
 import BookDetails from './BookDetails';
-import Background from './Background'; // Import the Background component
+import SearchBox from './SearchBox'; 
+import Background from './Background'; 
 
 class App extends Component {
   render() {
@@ -20,6 +21,7 @@ class App extends Component {
           <Background /> {/* Use the Background component here */}
           <Header />
           <Navbar />
+          <SearchBox onSearch={this.handleSearch} /> {/* Move the SearchBox component here */}
           <Switch>
             <Route exact path="/home" component={Home} />
             <Route exact path="/books" component={Books} />

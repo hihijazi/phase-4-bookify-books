@@ -47,7 +47,8 @@ class Book(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String)
     price = db.Column(db.Float)
-    author = db.Column(db.String)   
+    author = db.Column(db.String) 
+    thumbnail = db.Column(db.String(256))  
 
     # add relationship
     orders = db.relationship('Order', back_populates= 'book')
@@ -64,11 +65,11 @@ class Book(db.Model, SerializerMixin):
 
 
     @validates('price')
-    def validate_price(self, key, price):
-        if 1 <= price <= 15:  # Check if price is between 1 and 15
-            return price
-        else:
-            raise ValueError('Price must be between 1 and 15')
+    def validate_price(self, key, value):
+        if not 1 <= value <= 100:
+            raise ValueError('Price must be between 1 and 100')
+
+
         
     def __repr__(self):
         return f'<Class {self.id}:  {self.name}: {self.price}'
@@ -89,7 +90,7 @@ class Order(db.Model, SerializerMixin):
     customer = db.relationship('Customer', back_populates='orders')
 
     # Add serialization rules
-    serialize_rules=('-book.orders', '-customer.orders',)
+    serialize_rules=('-customer.orders',)
 
     # Add validation 
     @validates('name')

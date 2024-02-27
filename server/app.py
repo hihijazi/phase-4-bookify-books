@@ -3,7 +3,7 @@
 from flask import Flask, jsonify, request, make_response
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from models import db, Order, Book, Customer
+from models import db, Book, Order, Customer
 import os
 import requests
 from flask_cors import CORS
@@ -33,9 +33,9 @@ def index():
     return 'Welcome to Bookify Books Bookstore API!'
 
 class Books(Resource):
-    # def get(self):
-    #     books = [book.to_dict() for book in Book.query.all()]
-    #     return make_response(books, 200)
+    def get(self):
+        books = [book.to_dict() for book in Book.query.all()]
+        return make_response(books, 200)
     def get(self):
         try:
             # Use the Google Books API to fetch book data
@@ -127,10 +127,6 @@ class Customers(Resource):
             return make_response({
                 'error': 'Validation Error'
             })
-
-from flask import Flask, request, make_response
-from flask_restful import Api, Resource
-from models import Order, db
 
 class Orders(Resource):
     def get(self):
