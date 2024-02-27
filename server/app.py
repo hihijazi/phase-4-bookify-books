@@ -1,43 +1,63 @@
-from models import db, Order, Book, Customer
-from flask_migrate import Migrate
+#!/usr/bin/env python3
+
 from flask import Flask, jsonify, request, make_response
+from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from flask_cors import CORS
+from models import db, Order, Book, Customer
 import os
+import requests
+
 
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
 
 app = Flask(__name__)
-
-@app.route('/api/data')
-def get_combined_data():
-    books = [book.to_dict() for book in Book.query.all()]
-    orders = [order.to_dict() for order in Order.query.all()]
-    return jsonify({'books': books, 'orders': orders})
-
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 app.json.compact = False
+
+
 
 migrate = Migrate(app, db)
 
-db.init_app(app)
-
 api = Api(app)
 
-CORS(app)
+db.init_app(app)
+
+api_key = 'AIzaSyC05Boe1MwpOND_lf0Uu_uoN1zvpGlVlT8'
 
 @app.route('/')
 def index():
-    return 'Welcome to the Bookstore API!'
+    return 'Welcome to Bookify Books Bookstore API!'
 
 class Books(Resource):
+    # def get(self):
+    #     books = [book.to_dict() for book in Book.query.all()]
+    #     return make_response(books, 200)
     def get(self):
-        books = [book.to_dict() for book in Book.query.all()]
-        return make_response(books, 200)
+        try:
+            # Use the Google Books API to fetch book data
+            response = requests.get(
+                f"https://www.googleapis.com/books/v1/volumes?q=python&key={api_key}"
+            )
+            if response.ok:
+                data = response.json()
+                # Extract relevant information from the response and return it
+                books = [
+                    {
+                        "title": item["volumeInfo"]["title"],
+                        "author": ", ".join(item["volumeInfo"]["authors"]),
+                        "description": item["volumeInfo"]["description"] if "description" in item["volumeInfo"] else "",
+                        "image": item["volumeInfo"]["imageLinks"]["thumbnail"] if "imageLinks" in item["volumeInfo"] else "",
+                    }
+                    for item in data.get("items", [])
+                ]
+                return make_response(jsonify(books), 200)
+            else:
+                return make_response({"error": "Failed to fetch book data from the Google Books API"}, 500)
+        except Exception as e:
+            return make_response({"error": str(e)}, 500)
     
     def post(self):
         data = request.get_json()

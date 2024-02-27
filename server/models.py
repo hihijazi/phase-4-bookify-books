@@ -3,17 +3,15 @@ from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
-from faker import Faker
-
 
 metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
 })
 
+db = SQLAlchemy(metadata=metadata) 
 
-db = SQLAlchemy(metadata=metadata)
+# Models
 
-Faker = Faker() 
 
 class Customer(db.Model, SerializerMixin):
     __tablename__ = 'customers'
@@ -27,6 +25,7 @@ class Customer(db.Model, SerializerMixin):
     # Add serialization rules
     serialize_rules=('-orders.customer',)
 
+    # add validation
     @validates('id', 'name')
     def validate_customer(self, key, value):
         if key == 'name':
@@ -41,7 +40,6 @@ class Customer(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Customer {self.id}: {self.name} >'
 
-# Models begin here! 
 
 class Book(db.Model, SerializerMixin):
     __tablename__ = "books"
@@ -51,10 +49,13 @@ class Book(db.Model, SerializerMixin):
     price = db.Column(db.Float)
     author = db.Column(db.String)   
 
+    # add relationship
     orders = db.relationship('Order', back_populates= 'book')
 
+    # add serialization rules
     serialize_rules = ('-orders.book',)
 
+    # add validation
     @validates('title')
     def validate_name(self, key, name):
         if not name:
