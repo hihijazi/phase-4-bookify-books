@@ -6,6 +6,7 @@ from flask_restful import Api, Resource
 from models import db, Order, Book, Customer
 import os
 import requests
+from flask_cors import CORS
 
 
 
@@ -17,7 +18,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.json.compact = False
 
-
+cors = CORS(app)
 
 migrate = Migrate(app, db)
 

@@ -1,32 +1,72 @@
-import React, { useEffect, useState } from "react";
-import BookList from "./BookList";
+import React, { Component } from 'react';
+import BookList from './BookList';
+import SearchBox from './SearchBox';
+import request from 'superagent';
 
-const Books = () => {
-  const [books, setBooks] = useState([]);
+class Books extends Component {
 
-  useEffect(() => {
-    fetchBooks();
-  }, []);
-
-  const fetchBooks = async () => {
-    try {
-      const response = await fetch("http://127.0.0.1:5555/books");
-      if (!response.ok) {
-        throw new Error("Failed to fetch books");
-      }
-      const data = await response.json();
-      setBooks(data);
-    } catch (error) {
-      console.error("Error fetching books:", error);
+    constructor(props){
+        super(props)
+        this.state = {
+            books: [],
+            searchField: '',
+            sort: ''
+        }
     }
-  };
+    componentDidMount() {
+        request
+            .get("https://www.googleapis.com/books/v1/volumes")
+            .query({ q: this.state.searchField })
+            .then((data) => {
+                this.setState({ books: [...data.body.items] })
+            })
+    }
 
-  return (
-    <div style={{ marginTop: '-630px', padding: '75px', textAlign: 'center' }}>
-      <h2 style={{ fontSize: '36px' }}>Explore Our Books</h2>
-      <BookList books={books} />
-    </div>
-  );
-};
+    handleSubmit = (e) => {
+        e.preventDefault();
+        request
+            .get("https://www.googleapis.com/books/v1/volumes")
+            .query({ q: this.state.searchField })
+            .then((data) => {
+                console.log(data);
+                this.setState({ books: [...data.body.items] })
+        })
+    }
+
+    handleChange = (e) => {
+        this.setState({ searchField: e.target.value })
+    }
+
+    handleSort = (e) => {
+        this.setState({ sort: e.target.value});
+    }
+    
+
+    render() {
+        const filteredBooks = this.state.books.sort((a, b) => {
+            if(this.state.sort == 'Newest'){
+                console.log("in newest")
+                return parseInt(b.volumeInfo.publishedDate.substring(0, 4)) - parseInt(a.volumeInfo.publishedDate.substring(0, 4));
+            }
+            else if(this.state.sort == 'Oldest'){
+                return parseInt(a.volumeInfo.publishedDate.substring(0, 4)) - parseInt(b.volumeInfo.publishedDate.substring(0, 4));
+            }
+          
+          return;
+        })
+
+        return (
+            <div className="wrapper">
+                <SearchBox 
+                    data={this.state} 
+                    handleSubmit={this.handleSubmit} 
+                    handleChange={this.handleChange} 
+                    handleSort={this.handleSort}
+                />
+                <BookList books={filteredBooks}/>
+            </div>
+        );
+    }
+}
 
 export default Books;
