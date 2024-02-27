@@ -14,35 +14,34 @@ const OrderList = () => {
         throw new Error("Failed to fetch orders");
       }
       const data = await response.json();
-      setOrders(data.orders); // Assuming the data returned from the server is in the format { orders: [...] }
+      setOrders(data.orders);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
   };
 
-  const leftOrders = orders.slice(0, 5);
-  const rightOrders = orders.slice(5, 10);
+  const row1Orders = orders.slice(0, 5);
+  const row2Orders = orders.slice(5, 10);
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <div style={{ marginRight: "25px", padding: "10px" }}>
-        <h2 style={{ marginTop: "0px", marginLeft: "20px" }}> </h2>
-        <div>
-          {leftOrders.map((order) => (
-            <div key={order.id}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <h2>Orders</h2>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
+        <div style={{ marginRight: "25px", padding: "10px", display: "flex" }}>
+          {row1Orders.map((order) => (
+            <div key={order.id} style={{ marginRight: "10px" }}>
               <p>Order ID: {order.id}</p>
+              <p>Customer: {order.customer.name}</p>
               <p>Total Price: ${order.total_price}</p>
               {/* Display other order details as needed */}
             </div>
           ))}
         </div>
-      </div>
-      <div style={{ padding: "10px" }}>
-        <h2> </h2>
-        <div>
-          {rightOrders.map((order) => (
-            <div key={order.id}>
+        <div style={{ padding: "10px", display: "flex" }}>
+          {row2Orders.map((order) => (
+            <div key={order.id} style={{ marginRight: "10px" }}>
               <p>Order ID: {order.id}</p>
+              <p>Customer: {order.customer.name}</p>
               <p>Total Price: ${order.total_price}</p>
               {/* Display other order details as needed */}
             </div>
@@ -54,7 +53,3 @@ const OrderList = () => {
 };
 
 export default OrderList;
-
-
-
-
