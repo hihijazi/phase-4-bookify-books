@@ -1,17 +1,23 @@
-index.css
+ /* index.css */
+
 
 .bg {
   position: relative; /* Ensure the container is positioned relative */
 }
 
-.background-image {
-  position: absolute; /* Position the background image */
+.background-container {
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-image: url('/home/hihijazi/Development/code/phase-4/phase-4-bookify-books/client/src/images/background.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Ensure the background image remains fixed while scrolling */
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
   z-index: -1; /* Ensure the background image is behind other content */
+  overflow: y ;
 }
+
 
 body {
   margin: 0;
@@ -38,6 +44,9 @@ body {
   align-items: center; 
 }
 
+.title {
+  text-shadow: 0 0 5px black;;
+}
 
 .logo-container {
   display: flex;
@@ -102,44 +111,66 @@ ul {
   font-weight: bold; 
 }
 
-/* Search box container */
-.search-container {
+/* Styling for the search box container */
+.search-box-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin-top: -500px; 
+  align-items: center;
+  margin-top: -510px; /* Adjust the margin-top as needed */
 }
 
-/* Search input */
+/* Styling for the input element */
 .search-input {
-  width: 300px; /* Adjust width as needed */
-  padding: 10px;
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
+  width: 300px; /* Adjust the width as needed */
+  padding: 10px; /* Adjust the padding as needed */
+  font-size: 16px; /* Adjust the font size as needed */
 }
 
-/* Search button */
+/* Styling for the search button */
 .search-button {
-  background-color: green; /* Green button color */
+  background-color: green;
   color: white;
   border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  margin-left: 10px; /* Add spacing between input and button */
+  padding: 10px 20px; /* Adjust the padding as needed */
+  margin-left: 10px; /* Adjust the margin-left as needed */
+  font-size: 16px; /* Adjust the font size as needed */
   cursor: pointer;
 }
 
-/* Adjustments for mobile responsiveness */
-@media (max-width: 768px) {
-  .search-container {
-    flex-direction: column;
-  }
-  .search-input {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  .search-button {
-    margin-left: 0;
-  }
+/* Styling for the search button on hover */
+.search-button:hover {
+  background-color: darkgreen;
 }
+
+.content-container {
+  padding: 20px; /* Add padding to keep content away from edges */
+  overflow-y: auto; /* Enable vertical scrolling for content */
+  height: 100vh; /* Expand content container to fill viewport */
+}
+
+.books-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.book-item {
+  width: 30%; /* Adjust the width as needed */
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.book-item h3 {
+  margin-bottom: 5px;
+}
+
+.book-item p {
+  margin-bottom: 10px;
+}
+
+.book-item img {
+  max-width: 100%;
+}
+
