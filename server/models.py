@@ -79,6 +79,7 @@ class Order(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     total_price = db.Column(db.Float)
+    name = db.Column(db.String)
 
     # Add relationship
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
