@@ -18,7 +18,9 @@ class Customer(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    
+    # add login/password
+    #login route/ sign in 
+
     # Add relationship
     orders = db.relationship('Order', back_populates='customer', cascade = 'all, delete')
 
@@ -81,6 +83,8 @@ class Order(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     total_price = db.Column(db.Float)
+    quantity = db.Column(db.Integer)
+    # book.price x quantity - property dec to make setter and getter method calculation 
 
     # Add relationship
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
@@ -88,6 +92,7 @@ class Order(db.Model, SerializerMixin):
 
     book = db.relationship('Book', back_populates='orders')
     customer = db.relationship('Customer', back_populates='orders')
+    
 
     # Add serialization rules
     serialize_rules=('-customer.orders',)
