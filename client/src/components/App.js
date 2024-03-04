@@ -11,6 +11,7 @@ import Books from './Books';
 import AddBook from './AddBook';
 import BookDetails from './BookDetails';
 import Background from './Background'; 
+import Login from './Login';
 
 class App extends Component {
   render() {
@@ -22,6 +23,7 @@ class App extends Component {
           <Navbar />
           <Switch>
             <Route exact path="/home" component={Home} />
+            <Route exact path="/login" component={Login} />
             <Route exact path="/books" component={Books} />
             <Route exact path="/orders" component={Orders} />
             <Route exact path="/orders/:id" component={Orders} />

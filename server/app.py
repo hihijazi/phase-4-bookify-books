@@ -191,12 +191,29 @@ class OrdersById(Resource):
         return make_response({
             'error': 'No book found'
         }, 404)
+    
+class Login(Resource):
+    users = {
+        'admin123': 'password123',
+        'hadil_hijazi': 'password456'
+    }
+
+    def post(self):
+        data = request.json
+        username = data.get('username')
+        password = data.get('password')
+
+        if username in self.users and self.users[username] == password:
+            return jsonify({'message': 'Login successful'}), 200
+        else:
+            return jsonify({'error': 'Invalid username or password'}), 401
 
 api.add_resource(Books, '/books')
 api.add_resource(BooksById, '/books/<int:id>')
 api.add_resource(Customers, '/customers')
 api.add_resource(Orders, '/orders')
 api.add_resource(OrdersById, '/orders/<int:id>')
+api.add_resource(Login, '/login')
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)

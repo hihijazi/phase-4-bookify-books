@@ -174,3 +174,44 @@ ul {
   max-width: 100%;
 }
 
+.login-container {
+  margin-top: 15px;
+  text-align: center; 
+}
+
+.login-form {
+  max-width: 300px;
+  margin: -200px 0 0 auto; /* Adjust top margin to move it up and align it to the right */
+  padding: 20px; /* Add padding for better appearance */
+}
+
+.login-form label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.login-form input {
+  width: calc(100% - 20px); /* Adjust width to account for padding */
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.login-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: lightblue;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.login-form button:hover {
+  background-color: #0099cc; /* Darker shade of lightblue on hover */
+}
+
