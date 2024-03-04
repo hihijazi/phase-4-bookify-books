@@ -9,10 +9,6 @@ import os
 import requests
 from flask_cors import CORS, cross_origin
 
-
-
-
-
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
 
@@ -26,7 +22,9 @@ app.config['BASIC_AUTH_PASSWORD'] = 'password123'
 app.config['BASIC_AUTH_FORCE'] = True  
 basic_auth = BasicAuth(app)
 
-CORS(app, resources={r"/login": {"origins": "*"}})
+CORS(app, resources={r"/login": {"origins": "http://localhost:3000"}})
+
+cors = CORS(app)    
 
 migrate = Migrate(app, db)
 

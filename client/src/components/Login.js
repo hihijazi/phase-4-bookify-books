@@ -9,16 +9,16 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('http://127.0.0.1:5555/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
       });
-
+  
       if (response.ok) {
         console.log('Login successful');
         // No need to redirect here, handle the redirect where you use this component
@@ -28,7 +28,7 @@ function Login() {
     } catch (error) {
       console.error('Login failed:', error.message);
     }
-  };
+  };  
 
   return (
     <div className="login-container">
