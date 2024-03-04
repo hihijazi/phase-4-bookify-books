@@ -3,6 +3,9 @@ from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.ext.hybrid import hybrid_property
+from config import db, metadata, bcrypt
+import re
 
 metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
@@ -18,8 +21,8 @@ class Customer(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    # add login/password
-    #login route/ sign in 
+    username = db.Column(db.String)
+    _password_hash = db.Column(db.String)
 
     # Add relationship
     orders = db.relationship('Order', back_populates='customer', cascade = 'all, delete')
@@ -27,17 +30,30 @@ class Customer(db.Model, SerializerMixin):
     # Add serialization rules
     serialize_rules=('-orders.customer',)
 
-    # add validation
-    @validates('id', 'name')
-    def validate_customer(self, key, value):
-        if key == 'name':
-            if not value or (not isinstance(value, str)):
-                raise ValueError('Name must be a chracter!')
-            return value
-        if key == 'id':
-            if not 50 <= value <= 100:
-                raise ValueError('Id must be between 50 and 100!')
-            return value
+    # Add validation
+    @validates('name', 'username', 'password_hash')
+    def validate_user(self, key, value):
+        if value is None or (not value.strip()):
+            raise ValueError('Name, username, and password must exist!')
+        if key == 'password_hash':
+            if (len(value) < 5 or len(value) > 11) or (not re.search("[a-z]", value)) or (not any(char.isdigit() for char in value)):
+                raise ValueError("Invalid password. Must be 6 to 12 characters, contain lowercase and numbers")
+
+        return value
+
+    @hybrid_property
+    def password_hash(self):    
+        raise Exception('Password hashes may not be viewed.')
+#removed decode, encoding
+    @password_hash.setter
+    def password_hash(self, password):
+        self.validate_user('password_hash', password)  # Validate the password
+
+        password_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
+        self._password_hash = password_hash.decode('utf-8')
+
+    def authenticate(self, password):
+        return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
     
     def __repr__(self):
         return f'<Customer {self.id}: {self.name} >'
@@ -113,33 +129,3 @@ class Order(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Class {self.id}: {self.name}>'
     
-class User(db.Model):
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True, nullable=False)
-   
-    # Relationship with Login
-    logins = db.relationship('Login', back_populates='user', cascade='all, delete-orphan')
-
-    def __repr__(self):
-        return f'<User {self.id}: {self.username}>'
-    
-class Login(db.Model, SerializerMixin):
-    __tablename__ = 'logins'
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String, nullable=False) 
-
-    # Relationship with User
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User', back_populates='logins', uselist=False)
-
-    # Serialization rules
-    serialize_rules = ('id', 'username')
-
-    # Add validation 
-    
-    def __repr__(self):
-        return f'<Login {self.id}: {self.username}>'

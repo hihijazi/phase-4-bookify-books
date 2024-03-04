@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request, make_response, session
 from flask_basicauth import BasicAuth
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from models import db, Book, Order, Customer, User, Login
+from models import db, Book, Order, Customer
 import os
 import requests
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
+from dotenv import load_dotenv
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
@@ -17,13 +18,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.json.compact = False
 
-app.config['BASIC_AUTH_USERNAME'] = 'admin123'
-app.config['BASIC_AUTH_PASSWORD'] = 'password123'
-app.config['BASIC_AUTH_FORCE'] = True  
-basic_auth = BasicAuth(app)
-
-CORS(app, resources={r"/login": {"origins": "http://localhost:3000"}})
-
 cors = CORS(app)    
 
 migrate = Migrate(app, db)
@@ -32,7 +26,16 @@ api = Api(app)
 
 db.init_app(app)
 
-api_key = 'AIzaSyC05Boe1MwpOND_lf0Uu_uoN1zvpGlVlT8'
+def configure():
+    load_dotenv()
+
+# Views go here!
+@app.before_request        #allows any users to login 
+def check_if_logged_in():
+    allowed_endpoints = ['login', 'logout', 'users']
+    user_id = session.get('user_id')
+    if not user_id and request.endpoint not in allowed_endpoints :
+        return {'error': 'Unauthorized, Please Login'}, 401
 
 @app.route('/')
 def index():
@@ -46,7 +49,7 @@ class Books(Resource):
         try:
             # Use the Google Books API to fetch book data
             response = requests.get(
-                f"https://www.googleapis.com/books/v1/volumes?q=python&key={api_key}"
+                f"https://www.googleapis.com/books/v1/volumes?q=python&key={os.getenv('api_key')}"
             )
             if response.ok:
                 data = response.json()
@@ -80,7 +83,9 @@ class Books(Resource):
             return make_response({
                 'error':'Validation Error'
             })
-        
+
+api.add_resource(Books, '/books')
+
 class BooksById(Resource):
     def get(self, id):
         book = Book.query.filter(Book.id == id).first()
@@ -114,25 +119,60 @@ class BooksById(Resource):
         return make_response({
             'error': 'No Book found'
         }, 404)
-    
+
+api.add_resource(BooksById, '/books/<int:id>')
+
 class Customers(Resource):
     def get(self):
         customers = [customer.to_dict() for customer in Customer.query.all()]
         return make_response(customers, 200)
     
     def post(self):
-        data = request.get_json()
         try:
-            new_customer = Customer(
-                name=data['name']
+            data = request.get_json()
+            user = Customer(
+                name= data['name'],
+                username= data['username']
             )
-            db.session.add(new_customer)
+            user.password_hash = data['password'] ######################3
+            db.session.add(user)
             db.session.commit()
-            return make_response(new_customer.to_dict(rules=('-orders',)), 201)
+            return make_response(user.to_dict(only=('id', 'name', 'username')), 201)
         except ValueError:
-            return make_response({
-                'error': 'Validation Error'
-            })
+            return make_response({'error': 'Failed to add new user, try again!'}, 400)
+
+api.add_resource(Customers, '/customers') 
+
+class CustomersById(Resource):
+    def get(self, id):
+        user = Customer.query.filter(Customer.id == id).first()
+        if user:
+            return make_response(user.to_dict(only=('name', 'username')), 200)
+        return make_response({'error': 'user not found'},404)
+    def patch(self, id):
+        user = Customer.query.filter(Customer.id == id).first()
+        if user:
+            try:
+                data = request.get_json()
+                if 'password' in data:
+                    user.password_hash = data['password']
+                    del data['password']
+                for attr in data:
+                    setattr(user, attr, data[attr])
+                db.session.commit()
+                return make_response(user.to_dict(only=('name', 'username')), 202)
+            except ValueError:
+                return make_response({'error': 'Failed to edit user'}, 400)
+
+    def delete(self, id):
+        user = Customer.query.filter(Customer.id == id).first()
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return make_response({}, 204)
+        return make_response({'error': 'User not found'}, 404)
+    
+api.add_resource(CustomersById, '/customers/<int:id>')
 
 class Orders(Resource):
     def get(self):
@@ -164,7 +204,8 @@ class Orders(Resource):
             # If an error occurs, return an error response with status code 400 (Bad Request)
             return make_response({'error': str(e)}, 400)
 
-        
+api.add_resource(Orders, '/orders')
+
 class OrdersById(Resource):
     def get(self, id):
         order = Order.query.filter(Order.id == id).first()
@@ -198,32 +239,41 @@ class OrdersById(Resource):
             'error': 'No book found'
         }, 404)
 
+api.add_resource(OrdersById, '/orders/<int:id>') 
+
+#authentification
+class CheckSession(Resource):
+    def get(self):
+        customer = Customer.query.filter(Customer.id == session.get('user_id')).first()
+        if customer:
+            return customer.to_dict(only=('id','name', 'username'))
+        else:
+            return {'message': '401: Not Authorized'}, 401
+
 class Login(Resource):
     def post(self):
         try:
-            data = request.get_json()
-            username = data.get('username')
-            password = data.get('password')
+            username = request.get_json()['username']
+            password = request.get_json()['password']
 
-            if not username or not password:
-                return jsonify({'error': 'Username and password are required'}), 400
+            customer = Customer.query.filter(Customer.username == request.get_json()['username']).first()
+            if customer:
+                if customer.authenticate(password):
+                    session['user_id'] = customer.id
+                    return customer.to_dict(only=('id', 'name', 'username')), 200
+            return {'error': 'Invalid username or password'}, 401
+            
+        except ValueError:
+            return make_response({'error': 'Login failed'}, 400)     
 
-            user = User.query.filter_by(username=username).first()
-            if user and user.check_password(password):
-                return jsonify({'message': 'Login successful'}), 200
-            else:
-                return jsonify({'error': 'Invalid username or password'}), 401
-        except Exception as e:
-            # Log the error for debugging
-            app.logger.error(f"Login failed: {str(e)}")
-            return jsonify({'error': 'An unexpected error occurred'}), 500
+class Logout(Resource):
+    def delete(self):
+        session['user_id'] = None
+        return {'message': '204: No Content'}, 204 
 
-api.add_resource(Books, '/books')
-api.add_resource(BooksById, '/books/<int:id>')
-api.add_resource(Customers, '/customers')
-api.add_resource(Orders, '/orders')
-api.add_resource(OrdersById, '/orders/<int:id>')
-api.add_resource(Login, '/login')
+api.add_resource(CheckSession, '/check_session')
+api.add_resource(Login, '/login', endpoint='login')
+api.add_resource(Logout, '/logout', endpoint='logout')
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)

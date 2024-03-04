@@ -15,10 +15,10 @@ const Navbar = () => {
 
     return (
         <nav>
-            {/* <NavLink style={navLinkStyles} activeStyle={activeStyles} to="/home">Home</NavLink>
+            <NavLink style={navLinkStyles} activeStyle={activeStyles} to="/home">Home</NavLink>
             <NavLink style={navLinkStyles} activeStyle={activeStyles} to="/books">Books</NavLink>
             <NavLink style={navLinkStyles} activeStyle={activeStyles} to="/orders">Orders</NavLink>
-            <NavLink style={navLinkStyles} activeStyle={activeStyles} to="/addbook">Add Book</NavLink> */}
+            <NavLink style={navLinkStyles} activeStyle={activeStyles} to="/login">Login</NavLink>
         </nav>
     );
 };

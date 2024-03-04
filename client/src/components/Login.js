@@ -1,55 +1,67 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import '../index.css';
+import { Link } from 'react-router-dom';
 
-function Login() {
+function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const history = useHistory();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    console.log('inhandlesubmit')
     try {
-      const response = await fetch('http://127.0.0.1:5555/login', {
-        method: 'POST',
+      const response = await fetch('/login', {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
       });
-  
+
       if (response.ok) {
-        console.log('Login successful');
-        // No need to redirect here, handle the redirect where you use this component
-      } else {
-        console.error('Login failed:', response.statusText);
+        const user = await response.json();
+        onLogin(user);
+        window.alert('Login successful');
+
+      } else if (response.status === 401 || response.status === 500) {
+        throw new Error('Invalid username or password');
       }
     } catch (error) {
-      console.error('Login failed:', error.message);
+      if (error.message === 'Invalid username or password') {
+        window.alert('Invalid username or password. Please try again.');
+        setUsername('');
+        setPassword('');
+      }
     }
-  };  
+  };
 
-  return (
-    <div className="login-container">
-      <h2>Log In</h2>
-      <form className="login-form" onSubmit={handleLogin}>
-        <label htmlFor="username">Username:</label>
-        <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
-
-        <label htmlFor="password">Password:</label>
-        <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-
-        <button type="submit">Log In</button>
-      </form>
-    </div>
-  );
+// Login component
+return (
+  <div>
+     <form onSubmit={handleSubmit}>
+       <div>
+         <label htmlFor="username">Username:</label>
+         <input
+           type="text"
+           id="username"
+           value={username}
+           onChange={(e) => setUsername(e.target.value)}
+         />
+       </div>
+       <div>
+         <label htmlFor="password">Password:</label>
+         <input
+           type="password"
+           id="password"
+           value={password}
+           onChange={(e) => setPassword(e.target.value)}
+           autoComplete="current-password" // Add this line
+         />
+       </div>
+       <button type="submit">Submit</button>
+     </form>
+     <p>Not a Member? <Link to="/signup">Sign up</Link></p>
+  </div>
+ );
 }
 
 export default Login;
-
-
-
-
-
-
