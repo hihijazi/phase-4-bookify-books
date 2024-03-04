@@ -111,20 +111,9 @@ class Order(db.Model, SerializerMixin):
     
 
     # Add serialization rules
-    serialize_rules=('-customer.orders',)
+    serialize_rules = ('id', 'total_price', 'quantity', 'book', 'customer')
 
     # Add validation 
-    @validates('name')
-    def validate_name(self, key, value):
-        if not value:
-            raise ValueError('Must add name!')
-        return value
-    
-    @validates('price')
-    def validate_price(self, key, value):
-        if not 1 <= value <= 20:
-            raise ValueError('Price must be between 1 and 20!')
-        return value
     
     def __repr__(self):
         return f'<Class {self.id}: {self.name}>'

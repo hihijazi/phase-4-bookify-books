@@ -28,7 +28,7 @@ const App = () => {
             <Route exact path="/login" > <Login onLogin={setUser} /> </Route>
             <Route exact path="/account" component={Account} />
             <Route exact path="/books" component={Books} />
-            <Route exact path="/orders" component={Orders} />
+            <Route exact path="/orders" > <Orders  /> </Route>
             <Route exact path="/orders/:id" component={Orders} />
             <Route exact path="/books/:id" component={BookDetails} />
             <Route exact path="/logout" component={Logout} />

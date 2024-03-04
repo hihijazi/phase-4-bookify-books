@@ -5,6 +5,7 @@ from flask_basicauth import BasicAuth
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from models import db, Book, Order, Customer
+from sqlalchemy.orm import joinedload
 import os
 import requests
 from flask_cors import CORS
@@ -32,7 +33,7 @@ def configure():
 # Views go here!
 @app.before_request        #allows any users to login 
 def check_if_logged_in():
-    allowed_endpoints = ['login', 'logout', 'users']
+    allowed_endpoints = ['login', 'logout', 'users', 'orders']
     user_id = session.get('user_id')
     if not user_id and request.endpoint not in allowed_endpoints :
         return {'error': 'Unauthorized, Please Login'}, 401
@@ -177,32 +178,28 @@ api.add_resource(CustomersById, '/customers/<int:id>')
 class Orders(Resource):
     def get(self):
         try:
-            # Fetch orders from the database
-            orders = [order.to_dict() for order in Order.query.all()]
+            # Fetch orders from the database with related customer and book information
+            orders = Order.query.options(joinedload('customer'), joinedload('book')).all()
+            orders_data = [
+                {
+                    "id": order.id,
+                    "total_price": order.total_price,
+                    "customer": {
+                        "id": order.customer.id,
+                        "name": order.customer.name
+                    },
+                    "book": {
+                        "id": order.book.id,
+                        "title": order.book.title
+                    }
+                }
+                for order in orders
+            ]
             # Return a JSON response with the orders data and status code 200 (OK)
-            return make_response({"orders": orders}, 200)
+            return make_response({"orders": orders_data}, 200)
         except Exception as e:
             # If an error occurs, return an error response with status code 500 (Internal Server Error)
             return make_response({"error": str(e)}, 500)
-    
-    def post(self):
-        # Extract data from the request body
-        data = request.get_json()
-        try:
-            # Create a new order object
-            new_order = Order(
-                total_price=data['total_price'],
-                customer=data['customer']
-            )
-            # Add the new order to the database session
-            db.session.add(new_order)
-            # Commit the session to save the changes to the database
-            db.session.commit()
-            # Return a JSON response with the newly created order and status code 201 (Created)
-            return make_response({"order": new_order.to_dict()}, 201)
-        except Exception as e:
-            # If an error occurs, return an error response with status code 400 (Bad Request)
-            return make_response({'error': str(e)}, 400)
 
 api.add_resource(Orders, '/orders')
 

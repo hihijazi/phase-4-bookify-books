@@ -16,11 +16,10 @@ const Orders = () => {
                 }
             })
             .then(data => {
-                // Log the data structure to inspect its format
-                console.log(data);
-                // Update the component logic based on the data structure
-                // Example: if data.orders is an array, setOrders(data.orders)
-                // Example: if data.customers is an array, setCustomers(data.customers)
+                // Assuming the customers' data is nested within orders, extract it
+                const customers = data.map(order => order.customer);
+                setOrders(data);
+                setCustomers(customers);
             })
             .catch(error => {
                 console.error('Error fetching orders:', error);
