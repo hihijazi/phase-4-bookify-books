@@ -10,7 +10,6 @@
   height: 100vh;
   background-size: cover;
   background-image: url('/home/hihijazi/Development/code/phase-4/phase-4-bookify-books/client/src/images/background.png');
-  background-repeat: no-repeat;
   background-attachment: fixed; /* Ensure the background image remains fixed while scrolling */
   top: 0;
   left: 0;
@@ -175,14 +174,16 @@ ul {
 }
 
 .login-container {
-  margin-top: 15px;
-  text-align: center; 
+  position: relative;
+  margin-top: -500px;
+  text-align: center;
 }
 
 .login-form {
   max-width: 300px;
-  margin: -200px 0 0 auto; /* Adjust top margin to move it up and align it to the right */
-  padding: 20px; /* Add padding for better appearance */
+  margin: -40px auto;
+  padding: 20px;
+  position: relative; 
 }
 
 .login-form label {
@@ -192,7 +193,7 @@ ul {
 }
 
 .login-form input {
-  width: calc(100% - 20px); /* Adjust width to account for padding */
+  width: calc(100% - 20px);
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
@@ -212,6 +213,5 @@ ul {
 }
 
 .login-form button:hover {
-  background-color: #0099cc; /* Darker shade of lightblue on hover */
+  background-color: #0099cc;
 }
-

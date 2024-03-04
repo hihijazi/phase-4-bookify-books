@@ -1,7 +1,8 @@
 // Background.js
 
 import React from 'react';
-import backgroundImage from '../images/background.png'; // Update the import path to navigate to the images folder
+import backgroundImage from '../images/background.png'; 
+import '../index.css';
 
 const Background = () => {
   return (
@@ -10,6 +11,9 @@ const Background = () => {
       height: '100vh',
       backgroundSize: 'cover',
       backgroundImage: `url(${backgroundImage})`,
+      backgroundattachment: 'fixed',
+      backgroundrepeat: 'repeat',
+
     }} />
   );
 }

@@ -8,10 +8,10 @@ import Header from './Header';
 import Footer from './Footer';
 import Orders from './Orders';
 import Books from './Books';
-import AddBook from './AddBook';
+import Login from './Login';
 import BookDetails from './BookDetails';
 import Background from './Background'; 
-import Login from './Login';
+import Account from './Account';
 
 class App extends Component {
   render() {
@@ -24,11 +24,12 @@ class App extends Component {
           <Switch>
             <Route exact path="/home" component={Home} />
             <Route exact path="/login" component={Login} />
+            <Route exact path="/account" component={Account} />
             <Route exact path="/books" component={Books} />
             <Route exact path="/orders" component={Orders} />
             <Route exact path="/orders/:id" component={Orders} />
             <Route exact path="/books/:id" component={BookDetails} />
-            <Route exact path="/add-book" component={AddBook} />
+            <Route exact path="/login" component={Login} />
           </Switch>
           <Footer />
         </div>

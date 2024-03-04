@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
 from flask import Flask, jsonify, request, make_response
+from flask_basicauth import BasicAuth
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from models import db, Book, Order, Customer
+from models import db, Book, Order, Customer, User, Login
 import os
 import requests
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
+
+
 
 
 
@@ -18,7 +21,12 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.json.compact = False
 
-cors = CORS(app)
+app.config['BASIC_AUTH_USERNAME'] = 'admin123'
+app.config['BASIC_AUTH_PASSWORD'] = 'password123'
+app.config['BASIC_AUTH_FORCE'] = True  
+basic_auth = BasicAuth(app)
+
+CORS(app, resources={r"/login": {"origins": "*"}})
 
 migrate = Migrate(app, db)
 
@@ -191,22 +199,26 @@ class OrdersById(Resource):
         return make_response({
             'error': 'No book found'
         }, 404)
-    
+
 class Login(Resource):
-    users = {
-        'admin123': 'password123',
-        'hadil_hijazi': 'password456'
-    }
-
     def post(self):
-        data = request.json
-        username = data.get('username')
-        password = data.get('password')
+        try:
+            data = request.get_json()
+            username = data.get('username')
+            password = data.get('password')
 
-        if username in self.users and self.users[username] == password:
-            return jsonify({'message': 'Login successful'}), 200
-        else:
-            return jsonify({'error': 'Invalid username or password'}), 401
+            if not username or not password:
+                return jsonify({'error': 'Username and password are required'}), 400
+
+            user = User.query.filter_by(username=username).first()
+            if user and user.check_password(password):
+                return jsonify({'message': 'Login successful'}), 200
+            else:
+                return jsonify({'error': 'Invalid username or password'}), 401
+        except Exception as e:
+            # Log the error for debugging
+            app.logger.error(f"Login failed: {str(e)}")
+            return jsonify({'error': 'An unexpected error occurred'}), 500
 
 api.add_resource(Books, '/books')
 api.add_resource(BooksById, '/books/<int:id>')

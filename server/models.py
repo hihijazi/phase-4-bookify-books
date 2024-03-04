@@ -112,3 +112,34 @@ class Order(db.Model, SerializerMixin):
     
     def __repr__(self):
         return f'<Class {self.id}: {self.name}>'
+    
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+   
+    # Relationship with Login
+    logins = db.relationship('Login', back_populates='user', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<User {self.id}: {self.username}>'
+    
+class Login(db.Model, SerializerMixin):
+    __tablename__ = 'logins'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False) 
+
+    # Relationship with User
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', back_populates='logins', uselist=False)
+
+    # Serialization rules
+    serialize_rules = ('id', 'username')
+
+    # Add validation 
+    
+    def __repr__(self):
+        return f'<Login {self.id}: {self.username}>'
