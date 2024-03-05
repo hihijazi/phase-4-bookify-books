@@ -29,6 +29,9 @@ db.init_app(app)
 
 def configure():
     load_dotenv()
+dotenv_path = '/absolute/path/to/server/.env'
+load_dotenv(dotenv_path)
+api_key = os.getenv('API_KEY')
 
 # Views go here!
 @app.before_request        #allows any users to login 

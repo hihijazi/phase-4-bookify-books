@@ -1,38 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import OrderList from './OrderList';
 
-const Orders = () => {
+function Orders() {
+    const [ order, setOrder ] = useState({}); 
     const [orders, setOrders] = useState([]);
-    const [customers, setCustomers] = useState([]);
+    const [orderId, setOrderId] = useState(null); 
+    const [price, setPrice] = useState(0); 
 
     useEffect(() => {
-        // Fetch orders
-        fetch('http://127.0.0.1:5555/orders')
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Failed to fetch orders');
-                }
-            })
-            .then(data => {
-                // Assuming the customers' data is nested within orders, extract it
-                const customers = data.map(order => order.customer);
-                setOrders(data);
-                setCustomers(customers);
-            })
-            .catch(error => {
-                console.error('Error fetching orders:', error);
-            });
-    }, []);
+        fetch("/orders")
+          .then((r) => r.json())
+          .then(setOrders);
+      }, []);
+      
+      function handleSubmit(e) {
+        e.preventDefault();
+        const formData = {
+          order_id: orderId, // Use the orderId state variable
+          total_price: order.total_price, // Use the order state variable
+          price: price, // Use the price state variable
+        };
+        fetch("/orders", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+      }
 
     return (
         <div style={{ marginTop: '-600px', padding: '75px', textAlign: 'center' }}>
             <h2 > </h2> 
-            <OrderList orders={orders} customers={customers} />
+            <OrderList orders={orders} />
         </div>
     );
 };
 
 export default Orders;
-

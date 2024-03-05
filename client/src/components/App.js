@@ -6,7 +6,6 @@ import Home from './Home';
 import Navbar from './Navbar';
 import Header from './Header';
 import Footer from './Footer';
-import Orders from './Orders';
 import Books from './Books';
 import Login from './Login';
 import Logout from './Logout';
@@ -28,8 +27,6 @@ const App = () => {
             <Route exact path="/login" > <Login onLogin={setUser} /> </Route>
             <Route exact path="/account" component={Account} />
             <Route exact path="/books" component={Books} />
-            <Route exact path="/orders" > <Orders  /> </Route>
-            <Route exact path="/orders/:id" component={Orders} />
             <Route exact path="/books/:id" component={BookDetails} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/signup" component={Signup} />
