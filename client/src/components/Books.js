@@ -10,7 +10,7 @@ const Books = () => {
     event.preventDefault();
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${query}&key=AIzaSyC05Boe1MwpOND_lf0Uu_uoN1zvpGlVlT8`
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&key={os.getenv('api_key')}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch books");

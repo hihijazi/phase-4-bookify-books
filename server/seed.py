@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-from server.models import Book, Bookstore, Customer
+from models import Book, Bookstore, Customer
 import requests
-from server.app import app, db
+from app import app, db
 from faker import Faker  # Import Faker
 
 # Define the base URL for the Google Books API

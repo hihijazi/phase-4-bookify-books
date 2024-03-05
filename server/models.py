@@ -1,19 +1,64 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
+from sqlalchemy import ForeignKey, Column, Integer, String, Float
 from sqlalchemy.orm import validates
-from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.hybrid import hybrid_property
-from server.config import db, metadata, bcrypt
+from config import db, bcrypt
 import re
 
-metadata = MetaData(naming_convention={
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-})
-
-db = SQLAlchemy(metadata=metadata) 
-
 # Models
+
+class Bookstore(db.Model, SerializerMixin):
+    __tablename__ = 'bookstores'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    address = db.Column(db.String)
+  
+    # Add relationship with Customer
+    customers = db.relationship("Customer", back_populates='bookstore', cascade='all, delete')
+
+    # Add serialization rules
+    serialize_rules = ('-customers.bookstore',)
+
+    # Add validations
+
+    def __repr__(self):
+        return f'<Bookstore {self.id}: {self.name}: {self.address}>'
+
+
+class Book(db.Model, SerializerMixin):
+    __tablename__ = "books"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String)
+    price = db.Column(db.Float)
+    author = db.Column(db.String) 
+    thumbnail = db.Column(db.String(256))  
+
+    # Add relationship with Customer
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
+    customer = db.relationship('Customer', back_populates='books')
+
+    # Add serialization rules
+    serialize_rules = ('-customer.books',)
+
+    # Add validation
+    @validates('title')
+    def validate_name(self, key, name):
+        if not name:
+            raise ValueError('Must have a name.')
+        return name
+
+    @validates('price')
+    def validate_price(self, key, value):
+        if not 1 <= value <= 100:
+            raise ValueError('Price must be between 1 and 100')
+        
+    def __repr__(self):
+        return f'<Book {self.id}:  {self.title}: {self.price}>'
+
+
 
 class Customer(db.Model, SerializerMixin):
     __tablename__ = 'customers'
@@ -22,15 +67,17 @@ class Customer(db.Model, SerializerMixin):
     name = db.Column(db.String)
     username = db.Column(db.String)
     _password_hash = db.Column(db.String)
+    
 
     # Add relationship
-    favorite_book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
-    favorite_book = db.relationship('Book', back_populates='customers')
+    bookstore_id = db.Column(db.Integer, db.ForeignKey('bookstores.id'))
 
-    bookstores = db.relationship('Bookstore', back_populates='customers')
+    # Add foreign key to Book
+    bookstore = db.relationship('Bookstore', back_populates='customers')
+    books = db.relationship('Book', back_populates='customer')
 
     # Add serialization rules
-    serialize_rules=('-books.customer',)
+    serialize_rules = ('-books.customer', '-bookstore.customers')
 
     # Add validation
     @validates('name', 'username', 'password_hash')
@@ -46,7 +93,7 @@ class Customer(db.Model, SerializerMixin):
     @hybrid_property
     def password_hash(self):    
         raise Exception('Password hashes may not be viewed.')
-    #removed decode, encoding
+
     @password_hash.setter
     def password_hash(self, password):
         self.validate_user('password_hash', password)  # Validate the password
@@ -61,55 +108,3 @@ class Customer(db.Model, SerializerMixin):
         return f'<Customer {self.id}: {self.name} >'
 
 
-class Book(db.Model, SerializerMixin):
-    __tablename__ = "books"
-
-    id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String)
-    price = db.Column(db.Float)
-    author = db.Column(db.String) 
-    thumbnail = db.Column(db.String(256))  
-
-    # add relationship
-    customers = db.relationship('Customer', back_populates='favorite_book')
-
-    # add serialization rules
-    serialize_rules = ('-customers.book',)
-
-    # add validation
-    @validates('title')
-    def validate_name(self, key, name):
-        if not name:
-            raise ValueError('Must have a name.')
-        return name
-
-
-    @validates('price')
-    def validate_price(self, key, value):
-        if not 1 <= value <= 100:
-            raise ValueError('Price must be between 1 and 100')
-        
-    def __repr__(self):
-        return f'<Book {self.id}:  {self.title}: {self.price}'
-
-
-
-class Bookstore(db.Model, SerializerMixin):
-    __tablename__ = 'bookstores'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    address = db.Column(db.String)
-  
-    # Add relationship 
-    customers = db.relationship("Customer", back_populates='bookstores')
-
-    # Add serialization rules
-    serialize_rules = ('-customers.bookstores',)
-
-    # Add validations
-
-    def __repr__(self):
-        return f'<Bookstore {self.id}: {self.name}: {self.address}>'
-
-    

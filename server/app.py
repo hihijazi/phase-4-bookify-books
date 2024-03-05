@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request, make_response, session
 from flask_basicauth import BasicAuth
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from server.models import db, Book, Bookstore, Customer
+from models import db, Book, Bookstore, Customer
 from sqlalchemy.orm import joinedload
 import os
 import requests
