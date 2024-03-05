@@ -15,12 +15,6 @@ db = SQLAlchemy(metadata=metadata)
 
 # Models
 
-# Many-to-many relationship table
-# book_customer = db.Table('book_customer',
-#     db.Column('book_id', db.Integer, db.ForeignKey('books.id'), primary_key=True),
-#     db.Column('customer_id', db.Integer, db.ForeignKey('customers.id'), primary_key=True)
-# )
-
 class Customer(db.Model, SerializerMixin):
     __tablename__ = 'customers'
 
@@ -30,8 +24,10 @@ class Customer(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String)
 
     # Add relationship
-    books = db.relationship('Book', secondary=book_customer, back_populates='customers')
-    bookstores = db.relationship('Bookstore', secondary=bookstore_customer, back_populates='customers')
+    favorite_book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
+    favorite_book = db.relationship('Book', back_populates='customers')
+
+    bookstores = db.relationship('Bookstore', back_populates='customers')
 
     # Add serialization rules
     serialize_rules=('-books.customer',)
@@ -50,7 +46,7 @@ class Customer(db.Model, SerializerMixin):
     @hybrid_property
     def password_hash(self):    
         raise Exception('Password hashes may not be viewed.')
-#removed decode, encoding
+    #removed decode, encoding
     @password_hash.setter
     def password_hash(self, password):
         self.validate_user('password_hash', password)  # Validate the password
@@ -75,7 +71,7 @@ class Book(db.Model, SerializerMixin):
     thumbnail = db.Column(db.String(256))  
 
     # add relationship
-    customers = db.relationship('Customer', secondary=book_customer, back_populates='books')
+    customers = db.relationship('Customer', back_populates='favorite_book')
 
     # add serialization rules
     serialize_rules = ('-customers.book',)
@@ -106,7 +102,7 @@ class Bookstore(db.Model, SerializerMixin):
     address = db.Column(db.String)
   
     # Add relationship 
-    customers = db.relationship("Customer", secondary=bookstore_customer, back_populates='bookstores')
+    customers = db.relationship("Customer", back_populates='bookstores')
 
     # Add serialization rules
     serialize_rules = ('-customers.bookstores',)
