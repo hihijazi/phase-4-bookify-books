@@ -53,8 +53,7 @@ class Books(Resource):
         try:
             # Use the Google Books API to fetch book data
             response = requests.get(
-                f"https://www.googleapis.com/books/v1/volumes?q=python&key={os.getenv('api_key')}"
-            )
+                f"https://www.googleapis.com/books/v1/volumes?q=python&key=AIzaSyC05Boe1MwpOND_lf0Uu_uoN1zvpGlVlT8")
             if response.ok:
                 data = response.json()
                 # Extract relevant information from the response and return it
