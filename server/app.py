@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request, make_response, session
 from flask_basicauth import BasicAuth
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from models import db, Book, Order, Customer
+from models import db, Book, Bookstore, Customer
 from sqlalchemy.orm import joinedload
 import os
 import requests
@@ -126,6 +126,38 @@ class BooksById(Resource):
 
 api.add_resource(BooksById, '/books/<int:id>')
 
+class Bookstore(Resource):
+    def get(self):
+        bookstore_list = [
+            bookstore.to_dict(rules=("'-customers",))
+            for bookstore in Bookstore.query.all()
+        ]
+        return make_response(bookstore_list, 200)
+
+api.add_resource(Bookstore, "/bookstores")
+
+class BookstoreById(Resource):
+    def get(self, id): 
+        bookstore = Bookstore.query.filter_by(id=id).one_or_none()
+
+        if bookstore is not None:
+            return make_response(bookstore.to_dict(), 200)
+        else:
+            return make_response({"error": "Bookstore not found"}, 404)
+
+    def delete(self, id):
+        bookstore = Bookstore.query.filter_by(id=id).one_or_none()
+
+        if bookstore is None:
+            return make_response({"error": "Bookstore not found"}, 404)
+
+        db.session.delete(res)
+        db.session.commit()
+        return make_response({}, 204)
+
+
+api.add_resource(BookstoreById, "/bookstores/<int:id>")
+
 class Customers(Resource):
     def get(self):
         customers = [customer.to_dict() for customer in Customer.query.all()]
@@ -177,69 +209,6 @@ class CustomersById(Resource):
         return make_response({'error': 'User not found'}, 404)
     
 api.add_resource(CustomersById, '/customers/<int:id>')
-
-class Orders(Resource):
-    def get(self):
-        try:
-            # Fetch orders from the database with related customer and book information
-            orders = Order.query.options(joinedload('customer'), joinedload('book')).all()
-            orders_data = [
-                {
-                    "id": order.id,
-                    "total_price": order.total_price,
-                    "customer": {
-                        "id": order.customer.id,
-                        "name": order.customer.name
-                    },
-                    "book": {
-                        "id": order.book.id,
-                        "title": order.book.title
-                    }
-                }
-                for order in orders
-            ]
-            # Return a JSON response with the orders data and status code 200 (OK)
-            return make_response({"orders": orders_data}, 200)
-        except Exception as e:
-            # If an error occurs, return an error response with status code 500 (Internal Server Error)
-            return make_response({"error": str(e)}, 500)
-
-api.add_resource(Orders, '/orders')
-
-class OrdersById(Resource):
-    def get(self, id):
-        order = Order.query.filter(Order.id == id).first()
-        if order:
-            return make_response(order.to_dict(), 200)
-        else:
-            return make_response({
-                'error': 'No Order found'
-            }, 404)
-        
-    def patch(self, id):
-        order = Order.query.filter(Order.id == id).first()
-        try:
-            data = request.get_json()
-            for attr in data:
-                setattr(order, attr, data[attr])
-                db.session.commit()
-                return make_response(order.to_dict(), 202)
-        except ValueError:
-            return make_response({
-                'error': 'Validation error'
-            },404)
-    
-    def delete(self, id):
-        order = Order.query.filter(Order.id == id).first()
-        if order:
-            db.session.delete(order)
-            db.session.commit()
-            return make_response({}, 204)
-        return make_response({
-            'error': 'No book found'
-        }, 404)
-
-api.add_resource(OrdersById, '/orders/<int:id>') 
 
 #authentification
 class CheckSession(Resource):

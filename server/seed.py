@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from models import Book, Order, Customer
+from models import Book, Bookstore, Customer
 import requests
 from app import app, db
 from faker import Faker  # Import Faker
@@ -46,7 +46,7 @@ with app.app_context():
     # so you can run the seed file multiple times without having duplicate entries in your database
     print("Deleting data...")
     Book.query.delete()  
-    Order.query.delete()
+    Bookstore.query.delete()
     Customer.query.delete()
 
     # Generate fake data for customers
@@ -61,19 +61,18 @@ with app.app_context():
 
     seed_books_from_google_api()
 
-    # Generate fake data for orders with total price capped at $150
-    print("Generating fake orders...")
-    orders = [
-    Order(
-        total_price=faker.random_int(min=100, max=15000) / 100, 
-        customer_id=faker.random_element(elements=range(1, 11)),
-        book_id=faker.random_element(elements=range(1, 11)),
-        quantity=faker.random_int(min=1, max=5) 
-    ) for _ in range(10)
-    ]
-
-    # Add generated objects to the session
-    db.session.add_all(orders)
+    # Generate fake data for bookstores
+    print("Generating fake bookstores...")
+    bookstores = []
+    for _ in range(10):  # Generate 10 bookstores
+        bookstore = Bookstore(
+            name=faker.company(),
+            address=faker.address(),
+            customer_id=faker.random_element(elements=range(1, 11)),
+            book_id=faker.random_element(elements=range(1, 11)),
+            quantity=faker.random_int(min=1, max=5)
+    )
+    bookstores.append(bookstore)
 
     # Commit the session to the database
     db.session.commit()

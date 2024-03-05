@@ -15,6 +15,11 @@ db = SQLAlchemy(metadata=metadata)
 
 # Models
 
+# Many-to-many relationship table
+# book_customer = db.Table('book_customer',
+#     db.Column('book_id', db.Integer, db.ForeignKey('books.id'), primary_key=True),
+#     db.Column('customer_id', db.Integer, db.ForeignKey('customers.id'), primary_key=True)
+# )
 
 class Customer(db.Model, SerializerMixin):
     __tablename__ = 'customers'
@@ -25,10 +30,11 @@ class Customer(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String)
 
     # Add relationship
-    orders = db.relationship('Order', back_populates='customer', cascade = 'all, delete')
+    books = db.relationship('Book', secondary=book_customer, back_populates='customers')
+    bookstores = db.relationship('Bookstore', secondary=bookstore_customer, back_populates='customers')
 
     # Add serialization rules
-    serialize_rules=('-orders.customer',)
+    serialize_rules=('-books.customer',)
 
     # Add validation
     @validates('name', 'username', 'password_hash')
@@ -69,10 +75,10 @@ class Book(db.Model, SerializerMixin):
     thumbnail = db.Column(db.String(256))  
 
     # add relationship
-    orders = db.relationship('Order', back_populates= 'book')
+    customers = db.relationship('Customer', secondary=book_customer, back_populates='books')
 
     # add serialization rules
-    serialize_rules = ('-orders.book',)
+    serialize_rules = ('-customers.book',)
 
     # add validation
     @validates('title')
@@ -86,35 +92,28 @@ class Book(db.Model, SerializerMixin):
     def validate_price(self, key, value):
         if not 1 <= value <= 100:
             raise ValueError('Price must be between 1 and 100')
-
-
         
     def __repr__(self):
-        return f'<Class {self.id}:  {self.name}: {self.price}'
+        return f'<Book {self.id}:  {self.title}: {self.price}'
 
 
 
-class Order(db.Model, SerializerMixin):
-    __tablename__ = 'orders'
+class Bookstore(db.Model, SerializerMixin):
+    __tablename__ = 'bookstores'
 
     id = db.Column(db.Integer, primary_key=True)
-    total_price = db.Column(db.Float)
-    quantity = db.Column(db.Integer)
-    # book.price x quantity - property dec to make setter and getter method calculation 
-
-    # Add relationship
-    book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
-
-    book = db.relationship('Book', back_populates='orders')
-    customer = db.relationship('Customer', back_populates='orders')
-    
+    name = db.Column(db.String)
+    address = db.Column(db.String)
+  
+    # Add relationship 
+    customers = db.relationship("Customer", secondary=bookstore_customer, back_populates='bookstores')
 
     # Add serialization rules
-    serialize_rules = ('id', 'total_price', 'quantity', 'book', 'customer')
+    serialize_rules = ('-customers.bookstores',)
 
-    # Add validation 
-    
+    # Add validations
+
     def __repr__(self):
-        return f'<Class {self.id}: {self.name}>'
+        return f'<Bookstore {self.id}: {self.name}: {self.address}>'
+
     
