@@ -12,7 +12,7 @@ const Background = () => {
       backgroundSize: 'cover',
       backgroundImage: `url(${backgroundImage})`,
       backgroundattachment: 'fixed',
-      backgroundrepeat: 'repeat',
+      backgroundrepeat: 'norepeat',
 
     }} />
   );

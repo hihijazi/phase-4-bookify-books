@@ -11,12 +11,17 @@ import requests
 from flask_cors import CORS
 from dotenv import load_dotenv
 
+import click
+from flask.cli import with_appcontext
+from populate_data import populate_db
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.secret_key= "your_secret_key_here"
 app.json.compact = False
 
 cors = CORS(app)    
@@ -36,7 +41,7 @@ api_key = os.getenv('API_KEY')
 # Views go here!
 @app.before_request        #allows any users to login 
 def check_if_logged_in():
-    allowed_endpoints = ['login', 'logout', 'users', 'orders']
+    allowed_endpoints = ['login', 'logout', 'users', 'orders', "customers"]
     user_id = session.get('user_id')
     if not user_id and request.endpoint not in allowed_endpoints :
         return {'error': 'Unauthorized, Please Login'}, 401
@@ -243,6 +248,13 @@ class Logout(Resource):
 api.add_resource(CheckSession, '/check_session')
 api.add_resource(Login, '/login', endpoint='login')
 api.add_resource(Logout, '/logout', endpoint='logout')
+
+@app.cli.command('populate-db')
+@with_appcontext
+def populate_db_command():
+    """Flask command to populate the database with fake data."""
+    populate_db()
+    click.echo("Database populated.")
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)

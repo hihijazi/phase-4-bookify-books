@@ -9,7 +9,7 @@
   width: 100%;
   height: 100vh;
   background-size: cover;
-  background-image: url('/home/hihijazi/Development/code/phase-4/phase-4-bookify-books/client/src/images/background.png');
+  /*background-image: url("/Users/sultan/hadil/phase-4-bookify-books/client/src/images/Bookstorebackground.png");*/
   background-attachment: fixed; /* Ensure the background image remains fixed while scrolling */
   top: 0;
   left: 0;
@@ -29,18 +29,18 @@ body {
   height: 100%;
   overflow: auto; /* Allow overflow content to be scrollable if needed */
   z-index: 0;
-} 
+}
 
 .header-container {
   position: absolute; /* Position the header container absolutely */
   top: 0; /* Align the top of the container with the top of the page */
   width: 100%; /* Ensure the container spans the entire width */
   z-index: 1; /* Ensure the header is above the background */
-  color: white; 
-  padding: 5px; 
+  color: white;
+  padding: 5px;
   display: flex;
-  flex-direction: column; 
-  align-items: center; 
+  flex-direction: column;
+  align-items: center;
 }
 
 .title {
@@ -49,65 +49,65 @@ body {
 
 .logo-container {
   display: flex;
-  align-items: center; 
+  align-items: center;
 }
 
 .logo {
-  margin-left: 10px; 
+  margin-left: 10px;
 }
 
 .title {
-  font-weight: bold; 
+  font-weight: bold;
   font-size: 72px;
-  margin-right: 254px; 
-  display: flex; 
-  justify-content: center; 
+  margin-right: 254px;
+  display: flex;
+  justify-content: center;
   white-space: nowrap;
 }
 
 .links-container {
-  margin-top: 75px; 
+  margin-top: 75px;
   display: flex;
   justify-content: center;
 }
 
 .navigation-bar {
-  background-color: #e0c6a2; 
-  padding: 10px; 
+  background-color: #e0c6a2;
+  padding: 10px;
 }
 
 ul {
   list-style-type: none;
   padding: 0;
-  margin: 0; 
-  display: flex; 
+  margin: 0;
+  display: flex;
 }
 
 .nav-link {
   display: inline-block;
-  padding: 10px 160px; 
-  color: #008080; 
-  font-weight: bold; 
+  padding: 10px 160px;
+  color: #008080;
+  font-weight: bold;
   text-decoration: none;
-  margin-right: 10px; 
+  margin-right: 10px;
 }
 
 .nav-link:hover {
-  background-color: #efb8a6; 
-  color: white; 
+  background-color: #efb8a6;
+  color: white;
   border-radius: 5px;
 }
 
 .nav-link:last-child {
-  margin-right: 0; 
+  margin-right: 0;
 }
 
 .nav-link:not(.active-link) {
-  text-decoration: underline; 
+  text-decoration: underline;
 }
 
 .active-link {
-  font-weight: bold; 
+  font-weight: bold;
 }
 
 /* Styling for the search box container */
@@ -183,7 +183,7 @@ ul {
   max-width: 300px;
   margin: -40px auto;
   padding: 20px;
-  position: relative; 
+  position: relative;
 }
 
 .login-form label {
