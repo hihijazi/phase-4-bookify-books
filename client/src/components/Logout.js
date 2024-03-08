@@ -1,16 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import {useNavigate} from "react-router-dom";
 
 function Logout({ onLogOut }) {
-  function handleLogout() {
+  const navigate = useNavigate()
+  const [logoutSuccess, setLogoutSuccess] = useState(false);
+
+  useEffect(() => {
     fetch("/logout", {
       method: "DELETE",
-    }).then(() => onLogOut());
-  }
+    })
+    .then(response => {
+      if (response.ok) {
+        setLogoutSuccess(true);
+        localStorage.removeItem("user")
+         navigate('/home'); // Redirect to home page
+        window.location.reload(); // Reload the app
+      } else {
+        // Handle other status codes, if needed
+        console.error("Logout request failed");
+      }
+    })
+    .catch(error => {
+      console.error("Error during logout:", error);
+    });
+  }, [onLogOut]);
 
   return (
-    <div>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
+    <></>
   );
 }
 

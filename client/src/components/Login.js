@@ -1,67 +1,101 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { login } from './action.js';
+import _ from 'lodash';
+import {useNavigate} from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-function Login({ onLogin }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+function Login() {
+   const navigate = useNavigate();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const postData = {
+      username: data.get('username'),
+      password: data.get('password'),
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log('inhandlesubmit')
+    if (_.isEmpty(postData.username) || _.isEmpty(postData.password)) {
+      toast.error("Kindly fill both fields to login!");
+      return;
+    };
+
     try {
-      const response = await fetch('/login', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (response.ok) {
-        const user = await response.json();
-        onLogin(user);
-        window.alert('Login successful');
-
-      } else if (response.status === 401 || response.status === 500) {
-        throw new Error('Invalid username or password');
-      }
+      const data = await login(postData);
+      const serializedData = JSON.stringify(data);
+      localStorage.setItem("user", serializedData);
+       toast.success("Login successfully!");
+      navigate('/home'); // Redirect to home page
+      window.location.reload(); // Reload the app
     } catch (error) {
-      if (error.message === 'Invalid username or password') {
-        window.alert('Invalid username or password. Please try again.');
-        setUsername('');
-        setPassword('');
-      }
+         toast.error('Oops! Something went wrong server throws error');
     }
   };
 
-// Login component
-return (
-  <div>
-     <form onSubmit={handleSubmit}>
-       <div>
-         <label htmlFor="username">Username:</label>
-         <input
-           type="text"
-           id="username"
-           value={username}
-           onChange={(e) => setUsername(e.target.value)}
-         />
-       </div>
-       <div>
-         <label htmlFor="password">Password:</label>
-         <input
-           type="password"
-           id="password"
-           value={password}
-           onChange={(e) => setPassword(e.target.value)}
-           autoComplete="current-password" // Add this line
-         />
-       </div>
-       <button type="submit">Submit</button>
-     </form>
-     <p>Not a Member? <Link to="/signup">Sign up</Link></p>
-  </div>
- );
+  // Login component
+  return (
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '15px 30px',
+          background: 'white',
+          borderRadius: '8px'
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          Log in
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="username"
+            label="User Name"
+            name="username"
+            autoComplete="email"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Log In
+          </Button>
+          <Grid container>
+            <Link href="/signup" variant="p">
+              {"Don't have an account? Sign Up"}
+            </Link>
+          </Grid>
+        </Box>
+      </Box>
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }} />
+    </Container>
+
+  );
 }
 
 export default Login;
