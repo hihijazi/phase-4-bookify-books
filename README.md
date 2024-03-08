@@ -6,7 +6,7 @@
 
 ## Description: This App allows users to view available books.  Also porovides a list of nearby bookstores with their addresses.  Users can signup for an account and login and logout.  Users can delete a bookstore that no longer is within group.   
 
-![diagram_new](https://github.com/hihijazi/phase-4-bookify-books/assets/148264944/f04d68f6-da0f-4076-9687-33782e53035e)
+![diagram_new](https://github.com/hihijazi/phase-4-bookify-books/assets/148264944/e4562a97-7122-474e-b545-f1cc8e8d1edd)
 
 ## MVP 
 ##CRUD 
