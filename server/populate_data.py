@@ -2,8 +2,8 @@ import click
 from faker import Faker
 import bcrypt
 from models import Bookstore, Customer, db
-fake = Faker()
 
+fake = Faker()
 
 
 def populate_db(num_bookstores=5, num_customers_per_bookstore=10):
@@ -29,5 +29,3 @@ def populate_db(num_bookstores=5, num_customers_per_bookstore=10):
 
     db.session.commit()
     print(f"Database populated with {num_bookstores} bookstores and {num_customers_per_bookstore} customers each.")
-
-

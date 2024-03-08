@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logoGif from '../assets/logo.gif';
+import BookStore from "./Bookstore";
 
 
 const Header = () => {
+   const isLoggedIn = localStorage.getItem('user');
   return (
     <header className="header-container">
       <div className="logo-container">
@@ -11,7 +13,7 @@ const Header = () => {
         <h1 className="title">Bookify Books</h1>
       </div>
       <nav className="navigation-bar">
-        <ul>
+        <ul className='ul-custom'>
           <li>
             <Link to="/home" className="nav-link">
               Home
@@ -23,15 +25,23 @@ const Header = () => {
             </Link>
           </li>
           <li>
-            <Link to="/orders" className="nav-link">
+            <Link to="/book-store" className="nav-link">
               Bookstore
             </Link>
           </li>
-          <li>
-            <Link to="/login" className="nav-link">
-              Login
-            </Link>
-          </li>
+               {isLoggedIn ? (
+        <li>
+          <Link to="/logout" className="nav-link">
+            Logout
+          </Link>
+        </li>
+      ) : (
+        <li>
+          <Link to="/login" className="nav-link">
+            Login
+          </Link>
+        </li>
+      )}
         </ul>
       </nav>
     </header>

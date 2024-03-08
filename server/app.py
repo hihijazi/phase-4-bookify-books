@@ -1,11 +1,7 @@
-#!/usr/bin/env python3
-
 from flask import Flask, jsonify, request, make_response, session
-from flask_basicauth import BasicAuth
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from models import db, Book, Bookstore, Customer
-from sqlalchemy.orm import joinedload
 import os
 import requests
 from flask_cors import CORS
@@ -21,10 +17,10 @@ DATABASE = os.environ.get("DB_URI", f"sqlite:///{os.path.join(BASE_DIR, 'app.db'
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.secret_key= "your_secret_key_here"
+app.secret_key = "your_secret_key_here"
 app.json.compact = False
 
-cors = CORS(app)    
+cors = CORS(app)
 
 migrate = Migrate(app, db)
 
@@ -32,28 +28,35 @@ api = Api(app)
 
 db.init_app(app)
 
+
 def configure():
     load_dotenv()
+
+
 dotenv_path = '/absolute/path/to/server/.env'
 load_dotenv(dotenv_path)
 api_key = os.getenv('API_KEY')
 
+
 # Views go here!
-@app.before_request        #allows any users to login 
-def check_if_logged_in():
-    allowed_endpoints = ['login', 'logout', 'users', 'orders', "customers"]
-    user_id = session.get('user_id')
-    if not user_id and request.endpoint not in allowed_endpoints :
-        return {'error': 'Unauthorized, Please Login'}, 401
+# @app.before_request  # allows any users to login
+# def check_if_logged_in():
+#     allowed_endpoints = ['login', 'logout', 'users', 'orders', "customers", "bookstore"]
+#     user_id = session.get('user_id')
+#     if not user_id and request.endpoint not in allowed_endpoints:
+#         return {'error': 'Unauthorized, Please Login'}, 401
+
 
 @app.route('/')
 def index():
     return 'Welcome to Bookify Books Bookstore API!'
 
+
 class Books(Resource):
     def get(self):
         books = [book.to_dict() for book in Book.query.all()]
         return make_response(books, 200)
+
     def get(self):
         try:
             # Use the Google Books API to fetch book data
@@ -68,7 +71,8 @@ class Books(Resource):
                         "title": item["volumeInfo"]["title"],
                         "author": ", ".join(item["volumeInfo"]["authors"]),
                         "description": item["volumeInfo"]["description"] if "description" in item["volumeInfo"] else "",
-                        "image": item["volumeInfo"]["imageLinks"]["thumbnail"] if "imageLinks" in item["volumeInfo"] else "",
+                        "image": item["volumeInfo"]["imageLinks"]["thumbnail"] if "imageLinks" in item[
+                            "volumeInfo"] else "",
                     }
                     for item in data.get("items", [])
                 ]
@@ -77,23 +81,25 @@ class Books(Resource):
                 return make_response({"error": "Failed to fetch book data from the Google Books API"}, 500)
         except Exception as e:
             return make_response({"error": str(e)}, 500)
-    
+
     def post(self):
         data = request.get_json()
         try:
             new_book = Book(
-                name = data['name'],
-                price = data['price']
+                name=data['name'],
+                price=data['price']
             )
             db.session.add(new_book)
             db.session.commit()
-            return make_response(new_book.to_dict(rules = ('-orders',)), 201)
+            return make_response(new_book.to_dict(rules=('-orders',)), 201)
         except ValueError:
             return make_response({
-                'error':'Validation Error'
+                'error': 'Validation Error'
             })
 
+
 api.add_resource(Books, '/books')
+
 
 class BooksById(Resource):
     def get(self, id):
@@ -102,9 +108,9 @@ class BooksById(Resource):
             return make_response(book.to_dict(), 200)
         else:
             return make_response({
-                'error' : 'No Book found'
+                'error': 'No Book found'
             }, 404)
-        
+
     def patch(self, id):
         book = Book.query.filter(Book.id == id).first()
         if book:
@@ -118,7 +124,7 @@ class BooksById(Resource):
                 return make_response({
                     'error': 'Validation error'
                 }, 404)
-            
+
     def delete(self, id):
         book = Book.query.filter(Book.id == id).first()
         if book:
@@ -129,20 +135,24 @@ class BooksById(Resource):
             'error': 'No Book found'
         }, 404)
 
+
 api.add_resource(BooksById, '/books/<int:id>')
 
-class Bookstore(Resource):
+
+class BookstoreView(Resource):
     def get(self):
         bookstore_list = [
-            bookstore.to_dict(rules=("'-customers",))
+            bookstore.to_dict(rules=("-customers",))
             for bookstore in Bookstore.query.all()
         ]
         return make_response(bookstore_list, 200)
 
-api.add_resource(Bookstore, "/bookstores")
+
+api.add_resource(BookstoreView, "/bookstores")
+
 
 class BookstoreById(Resource):
-    def get(self, id): 
+    def get(self, id):
         bookstore = Bookstore.query.filter_by(id=id).one_or_none()
 
         if bookstore is not None:
@@ -156,40 +166,44 @@ class BookstoreById(Resource):
         if bookstore is None:
             return make_response({"error": "Bookstore not found"}, 404)
 
-        db.session.delete(res)
+        db.session.delete(bookstore)
         db.session.commit()
         return make_response({}, 204)
 
 
 api.add_resource(BookstoreById, "/bookstores/<int:id>")
 
+
 class Customers(Resource):
     def get(self):
         customers = [customer.to_dict() for customer in Customer.query.all()]
         return make_response(customers, 200)
-    
+
     def post(self):
         try:
             data = request.get_json()
             user = Customer(
-                name= data['name'],
-                username= data['username']
+                name=data['name'],
+                username=data['username']
             )
-            user.password_hash = data['password'] ######################3
+            user.password_hash = data['password']  ######################3
             db.session.add(user)
             db.session.commit()
             return make_response(user.to_dict(only=('id', 'name', 'username')), 201)
         except ValueError:
             return make_response({'error': 'Failed to add new user, try again!'}, 400)
 
-api.add_resource(Customers, '/customers') 
+
+api.add_resource(Customers, '/customers')
+
 
 class CustomersById(Resource):
     def get(self, id):
         user = Customer.query.filter(Customer.id == id).first()
         if user:
             return make_response(user.to_dict(only=('name', 'username')), 200)
-        return make_response({'error': 'user not found'},404)
+        return make_response({'error': 'user not found'}, 404)
+
     def patch(self, id):
         user = Customer.query.filter(Customer.id == id).first()
         if user:
@@ -212,17 +226,20 @@ class CustomersById(Resource):
             db.session.commit()
             return make_response({}, 204)
         return make_response({'error': 'User not found'}, 404)
-    
+
+
 api.add_resource(CustomersById, '/customers/<int:id>')
 
-#authentification
+
+# authentification
 class CheckSession(Resource):
     def get(self):
         customer = Customer.query.filter(Customer.id == session.get('user_id')).first()
         if customer:
-            return customer.to_dict(only=('id','name', 'username'))
+            return customer.to_dict(only=('id', 'name', 'username'))
         else:
             return {'message': '401: Not Authorized'}, 401
+
 
 class Login(Resource):
     def post(self):
@@ -236,18 +253,21 @@ class Login(Resource):
                     session['user_id'] = customer.id
                     return customer.to_dict(only=('id', 'name', 'username')), 200
             return {'error': 'Invalid username or password'}, 401
-            
+
         except ValueError:
-            return make_response({'error': 'Login failed'}, 400)     
+            return make_response({'error': 'Login failed'}, 400)
+
 
 class Logout(Resource):
     def delete(self):
-        session['user_id'] = None
-        return {'message': '204: No Content'}, 204 
+        session.pop("user_id", None)
+        return {'message': '204: No Content'}, 204
+
 
 api.add_resource(CheckSession, '/check_session')
 api.add_resource(Login, '/login', endpoint='login')
 api.add_resource(Logout, '/logout', endpoint='logout')
+
 
 @app.cli.command('populate-db')
 @with_appcontext
@@ -255,6 +275,7 @@ def populate_db_command():
     """Flask command to populate the database with fake data."""
     populate_db()
     click.echo("Database populated.")
+
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)
