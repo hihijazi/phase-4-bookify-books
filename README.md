@@ -4,20 +4,21 @@
 
 ## Phase: Flask Phase 4 
 
-## Description: This App allows you to streamline your bookstore operations.  Manage inventory, process orders, and provide a user-friendly interface for customers to browse, purchase, and review books. 
+## Description: This App allows users to view available books.  Also porovides a list of nearby bookstores with their addresses.  Users can signup for an account and login and logout.  Users can delete a bookstore that no longer is within group.   
 
-![Screenshot 2024-02-12 104333](https://github.com/hihijazi/phase-4-flask-project-bookstore/assets/148264944/2b9ca23c-b32b-4c4c-816f-0cb3bf66ecff)
 
 ## MVP 
 ##CRUD 
 
-C. Add books, orders, and customers
+C. Add books, bookstores
 
-R. Search books and orders
+R. Search books and bookstores
 
-U. Update books and orders 
+U. Update books and bookstores 
 
-D. Delete books 
+D. Delete bookstores 
+
+Auth. Signup/Login/Logout 
 
 
 
@@ -43,7 +44,7 @@ To download the dependencies for the frontend and backend, run:
 ```console
 pipenv install
 pipenv shell
-npm install --prefix client
+cd client - npm install
 ```
 
 You can run your Flask API on [`127.0.0.1:5555`](http://127.0.0.1:5555/) by
@@ -56,7 +57,7 @@ python server/app.py
 running:
 
 ```sh
-npm start --prefix client
+cd client npm start 
 ```
 
 ## Models
@@ -80,14 +81,8 @@ You can run your React app on [`localhost:4000`](http://localhost:4000) by
 running:
 
 ```sh
-npm start --prefix client
+cd client npm start 
 ```
-
-## Many-to-many
-
-- Customer has many orders through books
-- Orders has many customerss through books
-- Books belong to orders, and a customer
 
 ## Validations 
 
@@ -95,9 +90,9 @@ Add validations to the `Books` model:
 
 - must have a name
 
-Add validations to the `Orders` model:
+Add validations to the Bookstore` model:
 - must have a name
-- must have a price between 1 and 20
+- must have an address 
 
 ## Controllers
 
@@ -112,20 +107,20 @@ DELETE /books/:id
 ```          
 
 ```console
-GET    /customer/             
-POST   /customer/
+GET    /bookstore/             
+POST   /bookstore/
 ```           
 
 ```console
-GET    /orders/:id         
-PATCH  /orders/:id         
-DELETE /orders/:id
+GET    /bookstores/:id         
+PATCH  /bookstores/:id         
+DELETE /bookstores/:id
 ```      
 
 ## Serialize Rules
 ```console
 
-FRONTEND (REACT) Which components will make requests to your API? What route will the competent send fetch requests too? (i.e: ArtistForm, send a POST requests to /artists)
+FRONTEND (REACT) 
 -
 -
 -
@@ -133,8 +128,8 @@ FRONTEND (REACT) Which components will make requests to your API? What route wil
 ```console
 EXTRA!
 Stretch goals:
-- Suggested Books List according to previous book purchases.
--
+- Suggested Books List.
+- User cart to be able to purchase books. 
 -
 ```
 
